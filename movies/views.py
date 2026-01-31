@@ -19,7 +19,7 @@ def index(request):
 
 def show(request, id):
     movie = Movie.objects.get(id=id)
-    reviews = Review.objects.filter(movie=movie)
+    reviews = Review.objects.filter(movie=movie, is_hidden=False)
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
@@ -65,3 +65,23 @@ def delete_review(request, id, review_id):
         user=request.user)
     review.delete()
     return redirect('movies.show', id=id)
+
+@login_required
+def create_report(request, movie_id, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    if request.user == review.user:
+        return redirect('movies.show', id=movie_id)
+    if request.method == 'GET':
+        template_data = {}
+        template_data['title'] = 'Report Review'
+        template_data['review'] = review
+        return render(request, 'movies/create_report.html',
+            {'template_data': template_data})
+    if request.method == 'POST' and request.POST['reason']!= '':
+        review = Review.objects.get(id=review_id)
+        review.is_hidden = True
+        review.report_reason = request.POST['reason']
+        review.save()
+        return redirect('movies.show', id=movie_id)
+    else:
+        return redirect('movies.show', id=movie_id)
