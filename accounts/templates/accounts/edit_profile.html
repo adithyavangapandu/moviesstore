@@ -6,7 +6,7 @@
 {% block content %}
 
 <div class="container py-5" style="max-width: 720px;">
-  <h2>Sign Up</h2>
+  <h2>Edit Profile</h2>
   <hr />
   <form method="POST" novalidate>
     {% csrf_token %}
@@ -17,17 +17,6 @@
       {{ template_data.form.username }}
     </div>
 
-    <div class="mb-3">
-      <label class="form-label" for="{{ template_data.form.password1.id_for_label }}">Password</label>
-      {{ template_data.form.password1.errors }}
-      {{ template_data.form.password1 }}
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="{{ template_data.form.password2.id_for_label }}">Confirm Password</label>
-      {{ template_data.form.password2.errors }}
-      {{ template_data.form.password2 }}
-    </div>
 
     <div>
       <label class="form-label">US City</label>

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-6 mx-auto mb-3">
+        <h2>Reported Reviews</h2>
+        <hr />
+        <ul class="list-group">
+          {% for review in template_data.reviews %}
+          <li class="list-group-item pb-3 pt-3">
+            <h5 class="card-title">
+              Review by {{ review.user.username }}
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+              {{ review.date }}
+            </h6>
+            <h6 class="color:black">Comment</h6>
+            <p class="card-text">{{ review.comment }}</p>
+            <h6 class="color:black">Report Reason</h6>
+            <p class="card-text">{{ review.report_reason }}</p>
+            {% if user.is_staff %}
+            <a class="btn btn-danger"
+              href="{% url 'movies.delete_review_reported' review_id=review.id %}">Delete
+            </a>
+            <a class="btn btn-success"
+              href="{% url 'movies.unreport_review' review_id=review.id %}">Unreport
+            </a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% if user.is_authenticated %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

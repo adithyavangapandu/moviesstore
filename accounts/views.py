@@ -1,8 +1,9 @@
 
 from django.shortcuts import render
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
-from .forms import CustomUserCreationForm, CustomErrorList
+from .forms import CustomUserCreationForm, ProfileEditForm
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
@@ -35,11 +36,12 @@ def login(request):
 def signup(request):
     template_data = {}
     template_data['title'] = 'Sign Up'
+    template_data['GEOAPIFY_API_KEY'] = settings.GEOAPIFY_API_KEY
     if request.method == 'GET':
         template_data['form'] = CustomUserCreationForm()
         return render(request, 'accounts/signup.html', {'template_data': template_data})
     elif request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, error_class=CustomErrorList)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('accounts.login')
@@ -54,3 +56,28 @@ def orders(request):
     template_data['orders'] = request.user.order_set.all()
     return render(request, 'accounts/orders.html',
         {'template_data': template_data})
+
+@login_required
+def profile(request):
+    user_profile = getattr(request.user, 'profile', None)
+    template_data = {
+        'profile': user_profile
+    }
+    return render(request, 'accounts/profile.html', {'template_data': template_data})
+
+@login_required
+def edit_profile(request):
+    template_data = {
+        'GEOAPIFY_API_KEY': settings.GEOAPIFY_API_KEY
+    }
+    if request.method == 'GET':
+        template_data['form'] = ProfileEditForm(instance=request.user)
+        return render(request, 'accounts/edit_profile.html', {'template_data': template_data})
+    elif request.method == 'POST':
+        form = ProfileEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('home.index')
+        else:
+            template_data['form'] = form
+            return render(request, 'accounts/edit_profile.html', {'template_data': template_data})

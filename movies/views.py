@@ -1,5 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from .models import Movie, Review
+from accounts.models import Profile
+from cart.models import Item, Order
+from django.db.models import Sum, Count
+from accounts.forms import regions
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
@@ -85,3 +90,75 @@ def create_report(request, movie_id, review_id):
         return redirect('movies.show', id=movie_id)
     else:
         return redirect('movies.show', id=movie_id)
+
+@login_required
+def local_popularity_filter_data(request):
+    get_region = request.GET.get('region')
+    get_state = request.GET.get('state')
+    get_city = request.GET.get('city')
+
+    all_profiles = Profile.objects.all()
+    if get_region: all_profiles = all_profiles.filter(region=get_region)
+    if get_state: all_profiles = all_profiles.filter(state=get_state)
+    if get_city: all_profiles = all_profiles.filter(city=get_city)
+
+    cities = list(all_profiles.values_list('city', flat=True).distinct())
+    states = list(all_profiles.values_list('state', flat=True).distinct())
+    regions = list(all_profiles.values_list('region', flat=True).distinct())
+
+    markers = []
+    for profile in all_profiles:
+        markers.append({
+                "lat": profile.latitude,
+                "lon": profile.longitude,
+                "username": profile.user.username,
+                'is_current_user': profile.user_id == request.user.id,
+                'city': profile.city,
+                'state': profile.state,
+                'region': profile.region,
+            })
+
+    user_ids = list(all_profiles.values_list("user_id", flat=True))
+
+    movie_rows = (
+        Item.objects
+        .filter(order__user_id__in=user_ids)
+        .values("movie_id", "movie__name")
+        .annotate(
+            total_units=Sum("quantity"),
+            num_orders=Count("order_id", distinct=True),
+        )
+        .order_by("-total_units", "-num_orders", "movie__name")
+    )
+    TOP_K = 5
+    movies = [
+        {
+            "movie_id": row["movie_id"],
+            "movie_name": row["movie__name"],
+            "total_units": row["total_units"],
+            "num_orders": row["num_orders"],
+        }
+        for row in movie_rows[:TOP_K]
+    ]
+    return JsonResponse({
+        "markers": markers,
+        "options": {
+            "cities": cities,
+            "states": states,
+            "regions": regions,
+        },
+        "movies": movies,
+    })
+
+
+@login_required
+def popularity_map(request):
+
+
+    return render(request, 'movies/popularity_map.html',)
+
+'''
+3 layers of filters. Region, state, city.
+Do region or/and state, then unlock city.
+?region=SOUTH
+'''

@@ -1,0 +1,61 @@
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("[geoapify] DOMContentLoaded");
+        console.log("[geoapify] autocomplete:", window.autocomplete);
+
+        const GEOAPIFY_KEY = "{{ template_data.GEOAPIFY_API_KEY }}"
+
+        if (!GEOAPIFY_KEY) {
+            console.log("NO API KEY")
+        }
+
+        function clearHiddenVals() {
+            if (cityVal) cityVal.value = "";
+            if (stateVal) stateVal.value = "";
+            if (latVal) latVal.value = "";
+            if (lonVal) lonVal.value = "";
+        }
+
+        const cityVal = document.querySelector('input[name="city"]');
+        const stateVal = document.querySelector('input[name="state"]');
+        const latVal = document.querySelector('input[name="lat"]');
+        const lonVal = document.querySelector('input[name="lon"]');
+        const container = document.getElementById('address-search');
+        console.log("[geoapify] countainer found:", container);
+
+        const addressSearch = new autocomplete.GeocoderAutocomplete(
+        container,
+        GEOAPIFY_KEY,
+        {
+            placeholder: "Enter a US city",
+        }
+        );
+
+        if (addressSearch.setLang) addressSearch.setLang("en");
+        if (addressSearch.setType) addressSearch.setType("city");
+
+        if (addressSearch.clearFilters && addressSearch.addFilterByCountry) {
+            addressSearch.clearFilters();
+            addressSearch.addFilterByCountry(["us"]);
+        }
+
+        addressSearch.on('select', (feature) => {
+            const selected = feature.properties;
+            const city = selected.city;
+            const state = selected.state_code;
+            const lat = selected.lat;
+            console.log("Latitude:", lat)
+            const lon = selected.lon;
+
+            if (!city || !state) {
+                clearHiddenVals();
+                return;
+            }
+
+            cityVal.value = city;
+            stateVal.value = state;
+            latVal.value = lat;
+            lonVal.value = lon;
+        });
+    })
+</script>

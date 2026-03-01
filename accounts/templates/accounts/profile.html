@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 720px;">
+    <h2>Profile</h2>
+    <a class="btn btn-dark" href="{% url 'accounts.edit_profile' %}">Edit Profile</a>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Username</dt>
+                <dd class="col-sm-8">{{ user.username }}</dd>
+
+                <dt class="col-sm-4">City</dt>
+                <dd class="col-sm-8">{% if template_data.profile %}{{ template_data.profile.city }}
+                    {% else %}Not set{% endif %}</dd>
+
+                <dt class="col-sm-4">State</dt>
+                <dd class="col-sm-8">{% if template_data.profile %}{{ template_data.profile.state }}{% else %}Not set{% endif %}</dd>
+
+            </dl>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+{% endblock content %}
