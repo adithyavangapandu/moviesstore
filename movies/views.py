@@ -25,10 +25,20 @@ def index(request):
 def show(request, id):
     movie = Movie.objects.get(id=id)
     reviews = Review.objects.filter(movie=movie, is_hidden=False)
+    ratings = Rating.objects.filter(movie=movie)
+    avg_rating = 0
+    user_rating = 0
+    if ratings.exists():
+        avg_rating = round(sum([r.stars for r in ratings]) / ratings.count(),1)
+    if request.user.is_authenticated:
+        user_rating = Rating.objects.filter(movie=movie,user=request.user).first()
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
     template_data['reviews'] = reviews
+    template_data['avg_rating'] = avg_rating
+    template_data['user_rating'] = user_rating
+    template_data['rating_count'] = ratings.count()
     return render(request, 'movies/show.html',
                   {'template_data': template_data})
 
@@ -162,3 +172,22 @@ def popularity_map(request):
 Do region or/and state, then unlock city.
 ?region=SOUTH
 '''
+
+@login_required
+def rate_movie(request,id):
+    if request.method == 'POST':
+        movie = Movie.objects.get(id=id)
+        stars = int(request.POST.get('stars', 1))
+        if stars < 1:
+            stars = 1
+        if stars >5:
+            stars = 5
+        
+        rating, created = Rating.objects.update_or_create(
+            movie=movie,
+            user=request.user,
+            defaults={'stars': stars}
+        )
+        return redirect('movies.show', id=id)
+    else:
+        return redirect('movies.show', id=id)

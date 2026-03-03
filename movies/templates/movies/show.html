@@ -9,6 +9,53 @@
         <hr />
         <p><b>Description:</b> {{ template_data.movie.description }}</p>
         <p><b>Price:</b> ${{ template_data.movie.price }}</p>
+        <p> 
+          <b>Average Rating:</b>
+          {% if template_data.rating_count > 0 %}
+            {% for i in "12345" %}
+              {% if forloop.counter <= template_data.avg_rating %}
+                <i class ="fas fa-star text-warning"></i>
+              {% else %}
+                <i class ="far fa-star text-warning"></i>
+              {% endif %}
+            {% endfor %}
+            <span class="text-muted">({{ template_data.avg_rating }} / 5 from {{ template_data.rating_count }} ratings )</span>
+            {% else %}
+            <span class="text-muted">No rating yet</span>
+            {% endif %}
+        </p>
+
+        {% if user.is_authenticated %}
+        <div class="card shadow p-3 mb-4 rounded">
+          <div class="card-body">
+            <b>Rate this movie</b><br /><br />
+            <form method="POST" action="{% url 'movies.rate_movies' id=template_data.movie.id %}">
+              {% csrf_token %}
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <select name="stars" class="form-select">
+                    <option value="1" {% if template_data.user_rating.stars == 1 %}selected{% endif %}>1 - Poor</option>
+                    <option value="2" {% if template_data.user_rating.stars == 2 %}selected{% endif %}>2 - Fair</option>
+                    <option value="3" {% if template_data.user_rating.stars == 3 %}selected{% endif %}>3 - Good</option>
+                    <option value="4" {% if template_data.user_rating.stars == 4 %}selected{% endif %}>4 - Great</option>
+                    <option value="5" {% if template_data.user_rating.stars == 5 %}selected{% endif %}>5 - Excellent</option>
+                  </select>
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn bg-dark text-white">
+                    {% if template_data.user_rating %}Update Rating{% else %}Submit Rating{% endif %}
+                  </button>
+                </div>
+              </div>
+            </form>
+            {% if template_data.user_rating %}
+            <p class="mt-2 text-muted mb-0">
+              Your rating: {{ template_data.user_rating.stars}} / 5
+            </p>
+            {% endif %}
+          </div>
+        </div>
+           {% endif %}
         <p class="card-text">
           <form method="post"action="{% url 'cart.add' id=template_data.movie.id %}">
             <div class="row">
