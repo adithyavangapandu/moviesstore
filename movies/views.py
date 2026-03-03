@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Movie, Review
+from .models import Movie, Review, Rating
 from accounts.models import Profile
 from cart.models import Item, Order
 from django.db.models import Sum, Count
