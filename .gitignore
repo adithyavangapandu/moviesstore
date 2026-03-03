@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -13,18 +13,29 @@ ENV/
 build/
 dist/
 *.egg-info/
+*.egg
+pip-wheel-metadata/
 
-# Django
+# Django and local runtime data
+*.sqlite3
 db.sqlite3
 media/
 staticfiles/
+*.log
+
+# Secrets / local env overrides
+.env
+.env.*
 
 # IDE / OS files
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
 
 # Test and coverage outputs
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+.mypy_cache/
