@@ -54,7 +54,7 @@ class ProfileMixinForm(forms.Form):
         if not settings.GEOAPIFY_API_KEY:
             raise Exception('GEOAPIFY_API_KEY is not set in settings.py')
 
-        url = "https://api.geoapify.com/v1/geocode/reverse?REQUEST_PARAMS"
+        url = "https://api.geoapify.com/v1/geocode/reverse"
         params = {
             'lat': lat,
             'lon': lon,
@@ -71,8 +71,10 @@ class ProfileMixinForm(forms.Form):
         city = cleaned_data.get('city')
         state = cleaned_data.get('state')
         lat = cleaned_data.get('lat')
-        print("Latitude cleaned:", lat)
         lon = cleaned_data.get('lon')
+
+        if lat is None or lon is None:
+            raise forms.ValidationError("Location is required. Please allow location access or select a city.")
 
         data = self.reverse_geocode(lat, lon)
 

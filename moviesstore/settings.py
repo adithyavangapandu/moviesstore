@@ -135,4 +135,6 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-GEOAPIFY_API_KEY = os.environ.get('GEOAPIFY_API_KEY', '')
+GEOAPIFY_API_KEY = os.environ.get('GEOAPIFY_API_KEY', '6995913b05ff4a35bd0b6a98c739ae1d')
+
+LOGIN_URL = '/accounts/login'

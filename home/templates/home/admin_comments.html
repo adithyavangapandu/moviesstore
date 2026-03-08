@@ -9,25 +9,25 @@
     <div class="container">
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
-                <a class="nav-link active" href="{% url 'home.admin-dashboard' %}">Most Purchased</a>
+                <a class="nav-link" href="{% url 'home.admin-dashboard' %}">Most Purchased</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'home.admin-comments' %}">Top Commenter</a>
+                <a class="nav-link active" href="{% url 'home.admin-comments' %}">Top Commenter</a>
             </li>
         </ul>
         <div class="row mt-3">
             <div class="col mx-auto text-center mb-3">
-                <h4>Most Purchased Movie</h4>
-                {% if template_data.most_purchased %}
+                <h4>Top Commenter</h4>
+                {% if template_data.top_commenter %}
                 <p class="fs-5">
-                    <strong>{{template_data.most_purchased.movie_name}}</strong>
-                    - purchased {{template_data.most_purchased.total_purchased}} time(s)
+                    <strong>{{ template_data.top_commenter.user__username }}</strong>
+                    - {{ template_data.top_commenter.total_comments }} comments
                 </p>
                 {% else %}
-                   <p class="fs-5 text-muted">No purchases have been made yet</p> 
+                <p class="fs-5 text-muted">No comments have been made yet.</p>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
-{% endblock content %}
+{% endblock content%}
