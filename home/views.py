@@ -34,7 +34,12 @@ def admin_dashboard(request):
         top_movie = max(movie_counts, key = movie_counts.get)
         most_purchased = { 'movie_name' : top_movie, 'total_purchased': movie_counts[top_movie]}
     template_data['most_purchased'] = most_purchased
+
+    top_commented_movie = Review.objects.values('movie__name').annotate(total_comments=Count('id')).order_by('-total_comments').first()
+    template_data['top_commented_movie'] = top_commented_movie
+
     return render(request, 'home/admin_dashboard.html' , {'template_data': template_data})
+
 def admin_comments(request):
     if not request.user.is_superuser:
         return redirect('home.index')

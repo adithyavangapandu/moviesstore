@@ -28,6 +28,20 @@
                 {% endif %}
             </div>
         </div>
+
+        <div class="row mt-3">
+            <div class="col mx-auto text-center mb-3">
+                <h4>Most Commented Movie</h4>
+                {% if template_data.top_commented_movie %}
+                    <p class="fs-5">
+                        <strong>{{ template_data.top_commented_movie.movie__name}}</strong>
+                        - commented {{ template_data.top_commented_movie.total_comments }} time(s)
+                    </p>
+                {% else %}
+                    <p class="fs-5 text-muted">No comments have been made yet.</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
